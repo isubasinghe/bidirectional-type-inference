@@ -48,4 +48,20 @@ interact with the ``Eval'' module.
 module Main where
 \end{verbatim}
 
+\section{Lambda Calculus}
+Knowledge of lambda calculus is required to understand some of the type theory needed to understand the paper referenced previously. Here we 
+provide a quick, mediocre introduction to lambda calculus. 
+
+\subsection{$\alpha$ conversion}
+$\alpha$ conversion is. 
+
+\subsection{$\beta$ reductions}
+$\beta$ reductions are 
+
+\subsection{$\eta$ reductions}
+$\eta$ reductions
+
+
+
+
 \end{document}
