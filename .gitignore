@@ -1,0 +1,6 @@
+*.o
+*.hi
+*.aux
+*.out
+*.log
+*.ptb
