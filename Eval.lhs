@@ -63,7 +63,22 @@ $\eta$ reductions
 
 \subsection{\bf{Simply Typed Lambda Calculus}}
 Simply Typed Lambda Calculus can be given by the following grammar presented in BNF form. 
+\begin{code}
 
+data T 
+  = Var String 
+  | Application T T 
+  | TTrue 
+  | TFalse
+  | IfElse T T T
+  deriving(Show, Eq)
+
+data Type 
+  = TBool 
+  | TApp Type Type 
+  deriving(Show, Eq)
+
+\end{code}
 
 
 \appendix 
