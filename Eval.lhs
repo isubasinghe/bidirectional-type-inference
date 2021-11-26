@@ -63,6 +63,7 @@ $\eta$ reductions
 
 \subsection{\bf{Simply Typed Lambda Calculus}}
 Simply Typed Lambda Calculus can be given by the following grammar presented in BNF form. 
+The data structures used for evaluating the presented lambda calculus is provided below.
 \begin{code}
 
 data T 
@@ -80,6 +81,19 @@ data Type
 
 \end{code}
 
+Now we can finally start on type inference. The rule for infering a ``IfELse'' is provided below. 
+Please note that the first ``T'' is obviously required to be of type ``Bool'' while the next two ``T''s are only constrained 
+by the fact that they have to be the same type.
+
+\begin{code}
+inferType ctx (IfElse t1 t2 t3) = 
+  case (inferType ctx t1, inferType ctx t2, inferType, t3) of 
+    (Some TBool, Some ty2, Some ty3) => 
+      if ty2 == ty3 then 
+        Some ty2 
+      else Nothing 
+    _ => Nothing
+\end{code}
 
 \appendix 
 \section{\bf{Appendix}}
