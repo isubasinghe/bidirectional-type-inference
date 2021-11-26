@@ -50,7 +50,9 @@ module Main where
 
 \section{Lambda Calculus}
 Knowledge of lambda calculus is required to understand some of the type theory needed to understand the paper referenced previously. Here we 
-provide a quick, mediocre introduction to lambda calculus. 
+provide a quick, mediocre introduction to lambda calculus. Lambda Calculus is simply a mathematical model of expressing computation based on function abstraction and application. 
+It is as poweful as turing completeness for the task of describing computation as noted in the Church-Turing thesis. Interestingly there seems to also be a relationship between lambda caclulus and proof theory 
+as we can observe through the `Curry-Howard correspondence``, even more surprisingly, this observation can be extended to Category Theory as `Curry-Howard-Lambek correspondence`.
 
 \subsection{$\alpha$ conversion}
 $\alpha$ conversion is. 
@@ -81,7 +83,7 @@ data Type
 
 \end{code}
 
-Now we can finally start on type inference. The rule for infering a ``IfELse'' is provided below. 
+Now we can finally start on type inference. The rule for infering a ``IfElse'' is provided below. 
 Please note that the first ``T'' is obviously required to be of type ``Bool'' while the next two ``T''s are only constrained 
 by the fact that they have to be the same type.
 
@@ -94,6 +96,7 @@ inferType ctx (IfElse t1 t2 t3) =
       else Nothing 
     _ => Nothing
 \end{code}
+
 
 \appendix 
 \section{\bf{Appendix}}
