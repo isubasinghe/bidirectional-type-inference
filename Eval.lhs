@@ -51,7 +51,7 @@ module Main where
 \section{Lambda Calculus}
 Knowledge of lambda calculus is required to understand some of the type theory needed to understand the paper referenced previously. Here we 
 provide a quick, mediocre introduction to lambda calculus. Lambda Calculus is simply a mathematical model of expressing computation based on function abstraction and application. 
-It is as poweful as turing completeness for the task of describing computation as noted in the Church-Turing thesis. Interestingly there seems to also be a relationship between lambda caclulus and proof theory 
+It is as poweful as turing completeness for the task of describing computation as noted in the Church-Turing thesis. Interestingly, there seems to also be a relationship between lambda caclulus and proof theory 
 as we can observe through the `Curry-Howard correspondence``, even more surprisingly, this observation can be extended to Category Theory as `Curry-Howard-Lambek correspondence`.
 
 \subsection{$\alpha$ conversion}
