@@ -129,15 +129,24 @@ It is important to note two symbols that are needed to understand literature on 
 \paragraph{Variables}
 Let's define the rule for synthesis of a type of a variable. 
 $$\frac{(x : \tau) \in \Gamma}{\Gamma \vdash x \Rightarrow \tau }$$
+This is quite simple to infer the type for, since the type annotation already exists in our context. 
+
+> inferType ctx (Var s) = lookupTy s ctx
+
+\paragraph{Booleans}
+Another simple construct to type check are the boolean literals `true' and false'. The rules for inference are given below. 
+$$\frac{}{\Gamma \vdash \textbf{true} \Rightarrow \textbf{Bool}}$$ \vspace{1pt}
+$$\frac{}{\Gamma \vdash \textbf{false} \Rightarrow \textbf{Bool}}$$ 
+
+The below code is all we need for dealing with boolean literals. 
 \begin{code}
-inferType ctx (Var s) = lookupTy s ctx
 inferType ctx (TTrue) = Just TBool
 inferType ctx (TFalse) = Just TBool
 \end{code}
 `lookupTy' is given by the below code:
 \begin{code}
 lookupTy :: String -> M.Map String Type -> Maybe Type
-lookupTy x ctx = undefined
+lookupTy x ctx = M.lookup x ctx
 \end{code}
 
 Finally we can define type checking by the simple function below:
@@ -151,6 +160,27 @@ checkType ctx t ty = case inferType ctx t of
                        Nothing -> Nothing
 
 
+\end{code}
+
+\paragraph{Annotation}
+Now we examine how we can verify type annotated expression. 
+The grammar for inference/checking is shown below. 
+$$\frac{\Gamma \vdash t \Leftarrow \tau}{\Gamma \vdash : \tau \Rightarrow}$$
+\begin{code}
+inferType ctx (TypeAnnotation t ty) = checkType ctx t ty
+\end{code}
+
+\paragraph{IfElse}
+Here we observe how `IfElse' may be checked/infered. 
+$$\frac{\Gamma \vdash t_1 \Leftarrow \textbf{Bool } \ \ \ \ \Gamma \vdash t_2 \Leftarrow \tau \ \ \ \ \Gamma \vdash t_3 \Leftarrow \tau}{\Gamma \vdash \textbf{if } t_1 \textbf{ then } t_2 \textbf{ else } t_3 \Leftarrow \tau }$$
+
+\begin{code}
+checkType ctx (IfElse t1 t2 t3) ty = 
+  case ( checkType ctx t1 TBool
+       , checkType ctx t2 ty
+       , checkType ctx t3 ty) of 
+         (Just bty, Just ty2, Just ty3) -> Just ty 
+         _ -> Nothing
 \end{code}
 
 \appendix 
