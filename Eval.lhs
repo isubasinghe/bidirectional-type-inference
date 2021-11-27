@@ -81,7 +81,7 @@ Simply Typed Lambda Calculus can be given by the following grammar presented in 
   \bnfprod{\textit{t}}
   \bnfts{x} \bnfsk \bnfts{z} \bnftd{ -- Variables} \\ 
   \bnfmore \bnfor \bnfpn{\textit{t} \textit{t}} \bnftd{ -- Application} \\
-  \bnfmore \bnfor \bnfpn{$\lambda$ x . \textit{t}} \\ 
+  \bnfmore \bnfor \bnfpn{$\lambda$ x . \textit{t}} \bnftd{ -- Abstraction} \\ 
   \bnfmore \bnfor true \bnfor false \\ 
   \bnfmore \bnfor \textbf{if} \textit{ t } \textbf{then} \textit{ t } \textbf{else} \textit{ t } \\ 
   \bnfmore \bnfor t : \tau \\ 
