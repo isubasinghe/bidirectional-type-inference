@@ -4,6 +4,7 @@
 
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{hyperref}
+\usepackage[altpo]{backnaur}
 
 %include polycode.fmt
 %format alpha = "\alpha"
@@ -40,7 +41,11 @@ a certain cognitive effort by the reader.
 \section{Setup}
 Let's define a module called ``Eval'' used to contain our algorithm. This is a simple but necessary step for any Haskell program. 
 
-> module Eval where 
+\begin{code}
+module Eval where 
+import qualified Data.Set as S 
+import qualified Data.Map as M
+\end{code}
 
 In addition to the above code we need another module called ``Main'' to function as our entry point. We mostly don't have to worry about this Module, it is a simple interface to 
 interact with the ``Eval'' module. 
@@ -65,7 +70,18 @@ $\eta$ reductions
 
 \subsection{\bf{Simply Typed Lambda Calculus}}
 Simply Typed Lambda Calculus can be given by the following grammar presented in BNF form. 
+\begin{bnf*}
+  \bnfprod{\textit{t}}
+  \bnfts{x} \bnfsk \bnfts{z} \bnftd{ -- Variables} \\ 
+  \bnfmore \bnfor \bnfpn{\textit{t} \textit{t}} \bnftd{ -- Application} \\
+  \bnfmore \bnfor \bnfpn{$\lambda$ x . \textit{t}} \\ 
+  \bnfmore \bnfor 
+\end{bnf*}
+
+
 The data structures used for evaluating the presented lambda calculus is provided below.
+Note that the grammar has been slighly augmented 
+to account for typing judgements, the constructor `TypeAnnotation` is this augmentation. 
 \begin{code}
 
 data T 
@@ -74,6 +90,7 @@ data T
   | TTrue 
   | TFalse
   | IfElse T T T
+  | TypeAnnotation T Type
   deriving(Show, Eq)
 
 data Type 
