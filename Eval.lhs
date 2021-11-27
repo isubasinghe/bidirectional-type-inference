@@ -68,7 +68,14 @@ $\beta$ reductions are
 \subsection{$\eta$ reductions}
 $\eta$ reductions
 
-\subsection{\bf{Simply Typed Lambda Calculus}}
+\section{Set Theory}
+
+\section{First Order Logic}
+
+\section{Type Theory}
+
+
+\section{\bf{Simply Typed Lambda Calculus}}
 Simply Typed Lambda Calculus can be given by the following grammar presented in BNF form. 
 \begin{bnf*}
   \bnfprod{\textit{t}}
@@ -80,7 +87,7 @@ Simply Typed Lambda Calculus can be given by the following grammar presented in 
   \bnfmore \bnfor t : \tau \\ 
   \bnfprod{$\tau$} 
   \bnfpn{Bool} \\ 
-  \bnfmore \bnfor \tau \rightarrow \tau 
+  \bnfmore \bnfor \bnfpn{$\tau \rightarrow \tau$} 
 \end{bnf*}
 
 
@@ -105,20 +112,46 @@ data Type
 
 \end{code}
 
-Now we can finally start on type inference. The rule for infering a ``IfElse'' is provided below. 
-Please note that the first ``T'' is obviously required to be of type ``Bool'' while the next two ``T''s are only constrained 
-by the fact that they have to be the same type.
+Now we can finally start on type inference. First let's define our type signature for our inference function. 
 
 \begin{code}
-inferType ctx (IfElse t1 t2 t3) = 
-  case (inferType ctx t1, inferType ctx t2, inferType, t3) of 
-    (Some TBool, Some ty2, Some ty3) => 
-      if ty2 == ty3 then 
-        Some ty2 
-      else Nothing 
-    _ => Nothing
+inferType :: M.Map String Type -> T -> Maybe Type
+\end{code}
+The above definition is quite simple, it defines a function that accepts a `Context' (`M.Map String Type'), an expression (`T') and returns an algebraic data structure wrapping a type(`Type'), this ADT is `Maybe Type'. The usage of the `Maybe' 
+ADT is because the return value of the function could be nothing (`Nothing' is the function that constructs the Maybe ADT in this case) or something (`Just(x)' is the function that constructs the Maybe ADT in this case). 
+This `Context' corresponds directly to the $\Gamma$ symbol seen in type theory literature. 
+\paragraph{Note}
+It is important to note two symbols that are needed to understand literature on bidirectional type inference/checking. 
+\begin{itemize}
+  \item $\Rightarrow$ This is used in the form of x $\Rightarrow$ ty, it means ``x is infered to be of type ty''.
+  \item $\Leftarrow$ This is used in the form of x $\Leftarrow$ ty, it means "x type checks against type ty".
+\end{itemize}
+\paragraph{Variables}
+Let's define the rule for synthesis of a type of a variable. 
+$$\frac{(x : \tau) \in \Gamma}{\Gamma \vdash x \Rightarrow \tau }$$
+\begin{code}
+inferType ctx (Var s) = lookupTy s ctx
+inferType ctx (TTrue) = Just TBool
+inferType ctx (TFalse) = Just TBool
+\end{code}
+`lookupTy' is given by the below code:
+\begin{code}
+lookupTy :: String -> M.Map String Type -> Maybe Type
+lookupTy x ctx = undefined
 \end{code}
 
+Finally we can define type checking by the simple function below:
+
+\begin{code}
+checkType :: M.Map String Type -> T -> Type -> Maybe Type 
+checkType ctx t ty = case inferType ctx t of
+                       Just ty' -> if ty' == ty then 
+                                     Just ty' 
+                                   else Nothing 
+                       Nothing -> Nothing
+
+
+\end{code}
 
 \appendix 
 \section{\bf{Appendix}}
