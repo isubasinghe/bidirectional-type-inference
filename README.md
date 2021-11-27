@@ -12,4 +12,9 @@ Dunfield and Krishnaswami outline:
   * Sound 
   * Complete 
 
+## How to compile?
+Simple run `make` to generate the pdf, tex and executable files. 
+If you just want to obtain the pdf run `make pdf`. 
+If you just want to obtain the executable run `make tinfer`.
 
+A detailed, from scratch tutorial is provided here [here](./eval.pdf)
