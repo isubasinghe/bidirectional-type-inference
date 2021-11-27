@@ -4,4 +4,8 @@
 *.out
 *.log
 *.ptb
+*.fdb_latexmk
+*.fls 
+*.synctex 
+*.synctex.gz
 tinfer
