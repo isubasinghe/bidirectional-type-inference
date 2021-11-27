@@ -75,7 +75,12 @@ Simply Typed Lambda Calculus can be given by the following grammar presented in 
   \bnfts{x} \bnfsk \bnfts{z} \bnftd{ -- Variables} \\ 
   \bnfmore \bnfor \bnfpn{\textit{t} \textit{t}} \bnftd{ -- Application} \\
   \bnfmore \bnfor \bnfpn{$\lambda$ x . \textit{t}} \\ 
-  \bnfmore \bnfor 
+  \bnfmore \bnfor true \bnfor false \\ 
+  \bnfmore \bnfor \textbf{if} \textit{ t } \textbf{then} \textit{ t } \textbf{else} \textit{ t } \\ 
+  \bnfmore \bnfor t : \tau \\ 
+  \bnfprod{$\tau$} 
+  \bnfpn{Bool} \\ 
+  \bnfmore \bnfor \tau \rightarrow \tau 
 \end{bnf*}
 
 
@@ -87,10 +92,10 @@ to account for typing judgements, the constructor `TypeAnnotation` is this augme
 data T 
   = Var String 
   | Application T T 
-  | TTrue 
-  | TFalse
-  | IfElse T T T
-  | TypeAnnotation T Type
+  | TTrue --  Avoid conflict with Haskell's `True'
+  | TFalse  --  Avoid conflict with Haskell's `False'
+  | IfElse T T T -- If [Expr] Then [T1] Else [T2] where T1 == T2
+  | TypeAnnotation T Type -- Type annotation to mark that `T' is of type `Type'
   deriving(Show, Eq)
 
 data Type 
