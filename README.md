@@ -1,1 +1,2 @@
-# bidirectional-type-inference
+# Bidirectional Type Inference and Checking 
+
