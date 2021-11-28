@@ -55,9 +55,28 @@ module Main where
 
 \section{Lambda Calculus}
 Knowledge of lambda calculus is required to understand some of the type theory needed to understand the paper referenced previously. Here we 
-provide a quick, mediocre introduction to lambda calculus. Lambda Calculus is simply a mathematical model of expressing computation based on function abstraction and application. 
-It is as poweful as turing completeness for the task of describing computation as noted in the Church-Turing thesis. Interestingly, there seems to also be a relationship between lambda caclulus and proof theory 
-as we can observe through the `Curry-Howard correspondence``, even more surprisingly, this observation can be extended to Category Theory as `Curry-Howard-Lambek correspondence`.
+provide a quick, mediocre introduction to lambda calculus. What is lambda calculus you may ask, Michaelson states that $\lambda$ calculus is a system for manipulating $\lambda$ expressions.
+This is not entirely useful yet but it should make more sense when we explore what $\lambda$ expressions are. 
+
+\subsection{$\lambda$ expressions}
+$\lambda$ expressions are quite simple, they are either a name to identify an abstraction, a function or a function application to specialize an abstraction. 
+The BNF for $\lambda$ calculus is given below:
+\begin{bnf*}
+  \bnfprod{expression}
+  \bnfpn{name} \bnfor \bnfpn{function} \bnfor \bnfpn{application} \\
+  \bnfprod{name}
+  \bnfts{a} \bnfsk \bnfts{z} \\ 
+  \bnfprod{function}
+  \bnfts{$\lambda$} \bnfpn{name} \bnfts{.} \bnfpn{body}\\
+  \bnfprod{body}
+  \bnfpn{expression} \\ 
+  \bnfprod{application}
+  \bnfts{(} \bnfpn{function expression} \ \ \bnfpn{argument expression} \bnfts{)} \\
+  \bnfprod{function expression}
+  \bnfpn{expression} \\
+  \bnfprod{argument expression} 
+  \bnfpn{expression}
+\end{bnf*}
 
 \subsection{$\alpha$ conversion}
 $\alpha$ conversion is. 
