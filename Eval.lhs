@@ -99,6 +99,7 @@ to account for typing judgements, the constructor `TypeAnnotation` is this augme
 data T 
   = Var String 
   | Application T T 
+  | Abstraction T T
   | TTrue --  Avoid conflict with Haskell's `True'
   | TFalse  --  Avoid conflict with Haskell's `False'
   | IfElse T T T -- If [Expr] Then [T1] Else [T2] where T1 == T2
@@ -115,7 +116,6 @@ data Type
 Now we can finally start on type inference. First let's define our type signature for our inference function. 
 
 \begin{code}
-inferType :: M.Map String Type -> T -> Maybe Type
 \end{code}
 The above definition is quite simple, it defines a function that accepts a `Context' (`M.Map String Type'), an expression (`T') and returns an algebraic data structure wrapping a type(`Type'), this ADT is `Maybe Type'. The usage of the `Maybe' 
 ADT is because the return value of the function could be nothing (`Nothing' is the function that constructs the Maybe ADT in this case) or something (`Just(x)' is the function that constructs the Maybe ADT in this case). 
@@ -130,9 +130,6 @@ It is important to note two symbols that are needed to understand literature on 
 Let's define the rule for synthesis of a type of a variable. 
 $$\frac{(x : \tau) \in \Gamma}{\Gamma \vdash x \Rightarrow \tau }$$
 This is quite simple to infer the type for, since the type annotation already exists in our context. 
-
-> inferType ctx (Var s) = lookupTy s ctx
-
 \paragraph{Booleans}
 Another simple construct to type check are the boolean literals `true' and false'. The rules for inference are given below. 
 $$\frac{}{\Gamma \vdash \textbf{true} \Rightarrow \textbf{Bool}}$$ \vspace{1pt}
@@ -140,27 +137,12 @@ $$\frac{}{\Gamma \vdash \textbf{false} \Rightarrow \textbf{Bool}}$$
 
 The below code is all we need for dealing with boolean literals. 
 \begin{code}
+inferType :: M.Map String Type -> T -> Maybe Type
+inferType ctx (Var s) = lookupTy s ctx
 inferType ctx (TTrue) = Just TBool
 inferType ctx (TFalse) = Just TBool
 \end{code}
-`lookupTy' is given by the below code:
-\begin{code}
-lookupTy :: String -> M.Map String Type -> Maybe Type
-lookupTy x ctx = M.lookup x ctx
-\end{code}
 
-Finally we can define type checking by the simple function below:
-
-\begin{code}
-checkType :: M.Map String Type -> T -> Type -> Maybe Type 
-checkType ctx t ty = case inferType ctx t of
-                       Just ty' -> if ty' == ty then 
-                                     Just ty' 
-                                   else Nothing 
-                       Nothing -> Nothing
-
-
-\end{code}
 
 \paragraph{Annotation}
 Now we examine how we can verify type annotated expression. 
@@ -170,11 +152,20 @@ $$\frac{\Gamma \vdash t \Leftarrow \tau}{\Gamma \vdash : \tau \Rightarrow}$$
 inferType ctx (TypeAnnotation t ty) = checkType ctx t ty
 \end{code}
 
+`lookupTy' is given by the below code:
+\begin{code}
+lookupTy :: String -> M.Map String Type -> Maybe Type
+lookupTy x ctx = M.lookup x ctx
+\end{code}
+
+
+
 \paragraph{IfElse}
 Here we observe how `IfElse' may be checked/infered. 
 $$\frac{\Gamma \vdash t_1 \Leftarrow \textbf{Bool } \ \ \ \ \Gamma \vdash t_2 \Leftarrow \tau \ \ \ \ \Gamma \vdash t_3 \Leftarrow \tau}{\Gamma \vdash \textbf{if } t_1 \textbf{ then } t_2 \textbf{ else } t_3 \Leftarrow \tau }$$
 
 \begin{code}
+checkType :: M.Map String Type -> T -> Type -> Maybe Type 
 checkType ctx (IfElse t1 t2 t3) ty = 
   case ( checkType ctx t1 TBool
        , checkType ctx t2 ty
@@ -185,9 +176,26 @@ checkType ctx (IfElse t1 t2 t3) ty =
 
 \paragraph{Abstraction}
 $$\frac{\Gamma, x : \tau_1 \vdash \textit{t} \Leftarrow \tau_2}{\Gamma \vdash \lambda \ x . \ \textit{t} \Leftarrow \tau_1 \rightarrow \tau_2}$$
+\begin{code}
+checkType ctx (Abstraction t ty2) ty12 = 
+  case ty12 of 
+    (TApp ty1 ty2) -> undefined
+    _ -> undefined
+\end{code}
 
 \paragraph{Application}
 $$\frac{\Gamma \vdash \textit{t}_1 \Rightarrow \tau_1 \rightarrow \tau_2 \ \ \ \ \Gamma \vdash \textit{t}_2 \Leftarrow \tau_1}{\Gamma \vdash \textit{t}_1 \textit{t}_2 \Rightarrow \tau_2 }$$
+
+
+\begin{code}
+checkType ctx t ty = case inferType ctx t of
+                       Just ty' -> if ty' == ty then 
+                                     Just ty' 
+                                   else Nothing 
+                       Nothing -> Nothing
+\end{code}
+
+
 
 \appendix 
 \section{\bf{Appendix}}
