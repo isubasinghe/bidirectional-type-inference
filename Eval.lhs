@@ -14,7 +14,7 @@
 %format Set.singleton n = "\{" n "\}"
 %format <+> = "\left<+\right>"
 
-\title{\bf Bidirectional Type Checking and Inference (Draft)}
+\title{\bf Bidirectional Type Inference and Checking (Draft)}
 \author{Isitha Subasinghe}
 \date{26th November 2021 (Draft)}
 
@@ -182,6 +182,12 @@ checkType ctx (IfElse t1 t2 t3) ty =
          (Just bty, Just ty2, Just ty3) -> Just ty 
          _ -> Nothing
 \end{code}
+
+\paragraph{Abstraction}
+$$\frac{\Gamma, x : \tau_1 \vdash \textit{t} \Leftarrow \tau_2}{\Gamma \vdash \lambda \ x . \ \textit{t} \Leftarrow \tau_1 \rightarrow \tau_2}$$
+
+\paragraph{Application}
+$$\frac{\Gamma \vdash \textit{t}_1 \Rightarrow \tau_1 \rightarrow \tau_2 \ \ \ \ \Gamma \vdash \textit{t}_2 \Leftarrow \tau_1}{\Gamma \vdash \textit{t}_1 \textit{t}_2 \Rightarrow \tau_2 }$$
 
 \appendix 
 \section{\bf{Appendix}}
