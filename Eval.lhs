@@ -177,16 +177,18 @@ checkType ctx (IfElse t1 t2 t3) ty =
 \paragraph{Abstraction}
 $$\frac{\Gamma, x : \tau_1 \vdash \textit{t} \Leftarrow \tau_2}{\Gamma \vdash \lambda \ x . \ \textit{t} \Leftarrow \tau_1 \rightarrow \tau_2}$$
 \begin{code}
-checkType ctx (Abstraction t ty2) ty12 = 
+checkType ctx (Abstraction x t) ty12 = 
   case ty12 of 
     (TApp ty1 ty2) -> undefined
-    _ -> undefined
+      where 
+        cty = undefined
+    _ -> Nothing -- invalid type since an Abstraction has to be of type TApp
 \end{code}
 
 \paragraph{Application}
 $$\frac{\Gamma \vdash \textit{t}_1 \Rightarrow \tau_1 \rightarrow \tau_2 \ \ \ \ \Gamma \vdash \textit{t}_2 \Leftarrow \tau_1}{\Gamma \vdash \textit{t}_1 \textit{t}_2 \Rightarrow \tau_2 }$$
 
-
+\paragraph{Check Inference}
 \begin{code}
 checkType ctx t ty = case inferType ctx t of
                        Just ty' -> if ty' == ty then 
@@ -196,6 +198,10 @@ checkType ctx t ty = case inferType ctx t of
 \end{code}
 
 
+\section{Complete and Easy Bidirectional Typechecking for Higher-Rank Polymorphism}
+I think we are now finally at a place where we can start on Dunfield and Krishnaswami's work. 
+I understand that this is quite a lot to grasp, but I believe this is as small as I can keep this without threatening 
+the goals of this paper. 
 
 \appendix 
 \section{\bf{Appendix}}
