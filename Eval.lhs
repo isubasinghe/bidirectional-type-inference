@@ -180,7 +180,7 @@ lookupTy x ctx = M.lookup x ctx
 
 
 \paragraph{IfElse}
-Here we observe how `IfElse' may be checked/infered. 
+Here we observe how `IfElse' may be checked.
 $$\frac{\Gamma \vdash t_1 \Leftarrow \textbf{Bool } \ \ \ \ \Gamma \vdash t_2 \Leftarrow \tau \ \ \ \ \Gamma \vdash t_3 \Leftarrow \tau}{\Gamma \vdash \textbf{if } t_1 \textbf{ then } t_2 \textbf{ else } t_3 \Leftarrow \tau }$$
 
 \begin{code}
@@ -198,9 +198,7 @@ $$\frac{\Gamma, x : \tau_1 \vdash \textit{t} \Leftarrow \tau_2}{\Gamma \vdash \l
 \begin{code}
 checkType ctx (Abstraction x t) ty12 = 
   case ty12 of 
-    (TApp ty1 ty2) -> undefined
-      where 
-        cty = undefined
+    (TApp ty1 ty2) -> checkType ctx t ty2
     _ -> Nothing -- invalid type since an Abstraction has to be of type TApp
 \end{code}
 
