@@ -266,7 +266,7 @@
 \EndFmtInput
 %
 
-\title{\bf Bidirectional Type Checking and Inference (Draft)}
+\title{\bf Bidirectional Type Inference and Checking (Draft)}
 \author{Isitha Subasinghe}
 \date{26th November 2021 (Draft)}
 
@@ -312,9 +312,28 @@ interact with the ``Eval'' module.
 
 \section{Lambda Calculus}
 Knowledge of lambda calculus is required to understand some of the type theory needed to understand the paper referenced previously. Here we 
-provide a quick, mediocre introduction to lambda calculus. Lambda Calculus is simply a mathematical model of expressing computation based on function abstraction and application. 
-It is as poweful as turing completeness for the task of describing computation as noted in the Church-Turing thesis. Interestingly, there seems to also be a relationship between lambda caclulus and proof theory 
-as we can observe through the `Curry-Howard correspondence``, even more surprisingly, this observation can be extended to Category Theory as `Curry-Howard-Lambek correspondence`.
+provide a quick, mediocre introduction to lambda calculus. What is lambda calculus you may ask, Michaelson states that $\lambda$ calculus is a system for manipulating $\lambda$ expressions.
+This is not entirely useful yet but it should make more sense when we explore what $\lambda$ expressions are. 
+
+\subsection{$\lambda$ expressions}
+$\lambda$ expressions are quite simple, they are either a name to identify an abstraction, a function or a function application to specialize an abstraction. 
+The BNF for $\lambda$ calculus is given below:
+\begin{bnf*}
+  \bnfprod{expression}
+  \bnfpn{name} \bnfor \bnfpn{function} \bnfor \bnfpn{application} \\
+  \bnfprod{name}
+  \bnfts{a} \bnfsk \bnfts{z} \\ 
+  \bnfprod{function}
+  \bnfts{$\lambda$} \bnfpn{name} \bnfts{.} \bnfpn{body}\\
+  \bnfprod{body}
+  \bnfpn{expression} \\ 
+  \bnfprod{application}
+  \bnfts{(} \bnfpn{function expression} \ \ \bnfpn{argument expression} \bnfts{)} \\
+  \bnfprod{function expression}
+  \bnfpn{expression} \\
+  \bnfprod{argument expression} 
+  \bnfpn{expression}
+\end{bnf*}
 
 \subsection{$\alpha$ conversion}
 $\alpha$ conversion is. 
@@ -365,6 +384,9 @@ to account for typing judgements, the constructor `TypeAnnotation` is this augme
 \>[3]{}\mid \Conid{Application}\;\Conid{T}\;\Conid{T}{}\<[E]%
 \\
 \>[B]{}\hsindent{3}{}\<[3]%
+\>[3]{}\mid \Conid{Abstraction}\;\Conid{T}\;\Conid{T}{}\<[E]%
+\\
+\>[B]{}\hsindent{3}{}\<[3]%
 \>[3]{}\mid \Conid{TTrue}\mbox{\onelinecomment   Avoid conflict with Haskell's `True'}{}\<[E]%
 \\
 \>[B]{}\hsindent{3}{}\<[3]%
@@ -396,9 +418,6 @@ to account for typing judgements, the constructor `TypeAnnotation` is this augme
 Now we can finally start on type inference. First let's define our type signature for our inference function. 
 
 \begin{hscode}\SaveRestoreHook
-\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{inferType}\mathbin{::}\Conid{\Conid{M}.Map}\;\Conid{String}\;\Conid{Type}\to \Conid{T}\to \Conid{Maybe}\;\Conid{Type}{}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 The above definition is quite simple, it defines a function that accepts a `Context' (`M.Map String Type'), an expression (`T') and returns an algebraic data structure wrapping a type(`Type'), this ADT is `Maybe Type'. The usage of the `Maybe' 
@@ -414,13 +433,6 @@ It is important to note two symbols that are needed to understand literature on 
 Let's define the rule for synthesis of a type of a variable. 
 $$\frac{(x : \tau) \in \Gamma}{\Gamma \vdash x \Rightarrow \tau }$$
 This is quite simple to infer the type for, since the type annotation already exists in our context. 
-\begin{hscode}\SaveRestoreHook
-\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[3]{}\Varid{inferType}\;\Varid{ctx}\;(\Conid{Var}\;\Varid{s})\mathrel{=}\Varid{lookupTy}\;\Varid{s}\;\Varid{ctx}{}\<[E]%
-\ColumnHook
-\end{hscode}\resethooks
 \paragraph{Booleans}
 Another simple construct to type check are the boolean literals `true' and false'. The rules for inference are given below. 
 $$\frac{}{\Gamma \vdash \textbf{true} \Rightarrow \textbf{Bool}}$$ \vspace{1pt}
@@ -430,46 +442,16 @@ The below code is all we need for dealing with boolean literals.
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{inferType}\mathbin{::}\Conid{\Conid{M}.Map}\;\Conid{String}\;\Conid{Type}\to \Conid{T}\to \Conid{Maybe}\;\Conid{Type}{}\<[E]%
+\\
+\>[B]{}\Varid{inferType}\;\Varid{ctx}\;(\Conid{Var}\;\Varid{s})\mathrel{=}\Varid{lookupTy}\;\Varid{s}\;\Varid{ctx}{}\<[E]%
+\\
 \>[B]{}\Varid{inferType}\;\Varid{ctx}\;(\Conid{TTrue})\mathrel{=}\Conid{Just}\;\Conid{TBool}{}\<[E]%
 \\
 \>[B]{}\Varid{inferType}\;\Varid{ctx}\;(\Conid{TFalse})\mathrel{=}\Conid{Just}\;\Conid{TBool}{}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
-`lookupTy' is given by the below code:
-\begin{hscode}\SaveRestoreHook
-\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{lookupTy}\mathbin{::}\Conid{String}\to \Conid{\Conid{M}.Map}\;\Conid{String}\;\Conid{Type}\to \Conid{Maybe}\;\Conid{Type}{}\<[E]%
-\\
-\>[B]{}\Varid{lookupTy}\;\Varid{x}\;\Varid{ctx}\mathrel{=}\Varid{\Conid{M}.lookup}\;\Varid{x}\;\Varid{ctx}{}\<[E]%
-\ColumnHook
-\end{hscode}\resethooks
 
-Finally we can define type checking by the simple function below:
-
-\begin{hscode}\SaveRestoreHook
-\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{24}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{36}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{38}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{checkType}\mathbin{::}\Conid{\Conid{M}.Map}\;\Conid{String}\;\Conid{Type}\to \Conid{T}\to \Conid{Type}\to \Conid{Maybe}\;\Conid{Type}{}\<[E]%
-\\
-\>[B]{}\Varid{checkType}\;\Varid{ctx}\;\Varid{t}\;\Varid{ty}\mathrel{=}\mathbf{case}\;\Varid{inferType}\;\Varid{ctx}\;\Varid{t}\;\mathbf{of}{}\<[E]%
-\\
-\>[B]{}\hsindent{24}{}\<[24]%
-\>[24]{}\Conid{Just}\;\Varid{ty'}\to \mathbf{if}\;\Varid{ty'}\equiv \Varid{ty}\;\mathbf{then}{}\<[E]%
-\\
-\>[24]{}\hsindent{14}{}\<[38]%
-\>[38]{}\Conid{Just}\;\Varid{ty'}{}\<[E]%
-\\
-\>[24]{}\hsindent{12}{}\<[36]%
-\>[36]{}\mathbf{else}\;\Conid{Nothing}{}\<[E]%
-\\
-\>[B]{}\hsindent{24}{}\<[24]%
-\>[24]{}\Conid{Nothing}\to \Conid{Nothing}{}\<[E]%
-\ColumnHook
-\end{hscode}\resethooks
 
 \paragraph{Annotation}
 Now we examine how we can verify type annotated expression. 
@@ -482,8 +464,20 @@ $$\frac{\Gamma \vdash t \Leftarrow \tau}{\Gamma \vdash : \tau \Rightarrow}$$
 \ColumnHook
 \end{hscode}\resethooks
 
+`lookupTy' is given by the below code:
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{lookupTy}\mathbin{::}\Conid{String}\to \Conid{\Conid{M}.Map}\;\Conid{String}\;\Conid{Type}\to \Conid{Maybe}\;\Conid{Type}{}\<[E]%
+\\
+\>[B]{}\Varid{lookupTy}\;\Varid{x}\;\Varid{ctx}\mathrel{=}\Varid{\Conid{M}.lookup}\;\Varid{x}\;\Varid{ctx}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+
+
 \paragraph{IfElse}
-Here we observe how `IfElse' may be checked/infered. 
+Here we observe how `IfElse' may be checked.
 $$\frac{\Gamma \vdash t_1 \Leftarrow \textbf{Bool } \ \ \ \ \Gamma \vdash t_2 \Leftarrow \tau \ \ \ \ \Gamma \vdash t_3 \Leftarrow \tau}{\Gamma \vdash \textbf{if } t_1 \textbf{ then } t_2 \textbf{ else } t_3 \Leftarrow \tau }$$
 
 \begin{hscode}\SaveRestoreHook
@@ -492,6 +486,8 @@ $$\frac{\Gamma \vdash t_1 \Leftarrow \textbf{Bool } \ \ \ \ \Gamma \vdash t_2 \L
 \column{8}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{10}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{checkType}\mathbin{::}\Conid{\Conid{M}.Map}\;\Conid{String}\;\Conid{Type}\to \Conid{T}\to \Conid{Type}\to \Conid{Maybe}\;\Conid{Type}{}\<[E]%
+\\
 \>[B]{}\Varid{checkType}\;\Varid{ctx}\;(\Conid{IfElse}\;\Varid{t1}\;\Varid{t2}\;\Varid{t3})\;\Varid{ty}\mathrel{=}{}\<[E]%
 \\
 \>[B]{}\hsindent{3}{}\<[3]%
@@ -510,6 +506,58 @@ $$\frac{\Gamma \vdash t_1 \Leftarrow \textbf{Bool } \ \ \ \ \Gamma \vdash t_2 \L
 \>[10]{}\anonymous \to \Conid{Nothing}{}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
+
+\paragraph{Abstraction}
+$$\frac{\Gamma, x : \tau_1 \vdash \textit{t} \Leftarrow \tau_2}{\Gamma \vdash \lambda \ x . \ \textit{t} \Leftarrow \tau_1 \rightarrow \tau_2}$$
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{5}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{checkType}\;\Varid{ctx}\;(\Conid{Abstraction}\;\Varid{x}\;\Varid{t})\;\Varid{ty12}\mathrel{=}{}\<[E]%
+\\
+\>[B]{}\hsindent{3}{}\<[3]%
+\>[3]{}\mathbf{case}\;\Varid{ty12}\;\mathbf{of}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}(\Conid{TApp}\;\Varid{ty1}\;\Varid{ty2})\to \Varid{checkType}\;\Varid{ctx}\;\Varid{t}\;\Varid{ty2}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\anonymous \to \Conid{Nothing}\mbox{\onelinecomment  invalid type since an Abstraction has to be of type TApp}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+\paragraph{Application}
+$$\frac{\Gamma \vdash \textit{t}_1 \Rightarrow \tau_1 \rightarrow \tau_2 \ \ \ \ \Gamma \vdash \textit{t}_2 \Leftarrow \tau_1}{\Gamma \vdash \textit{t}_1 \textit{t}_2 \Rightarrow \tau_2 }$$
+
+\paragraph{Check Inference}
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{24}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{36}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{38}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\Varid{checkType}\;\Varid{ctx}\;\Varid{t}\;\Varid{ty}\mathrel{=}\mathbf{case}\;\Varid{inferType}\;\Varid{ctx}\;\Varid{t}\;\mathbf{of}{}\<[E]%
+\\
+\>[B]{}\hsindent{24}{}\<[24]%
+\>[24]{}\Conid{Just}\;\Varid{ty'}\to \mathbf{if}\;\Varid{ty'}\equiv \Varid{ty}\;\mathbf{then}{}\<[E]%
+\\
+\>[24]{}\hsindent{14}{}\<[38]%
+\>[38]{}\Conid{Just}\;\Varid{ty'}{}\<[E]%
+\\
+\>[24]{}\hsindent{12}{}\<[36]%
+\>[36]{}\mathbf{else}\;\Conid{Nothing}{}\<[E]%
+\\
+\>[B]{}\hsindent{24}{}\<[24]%
+\>[24]{}\Conid{Nothing}\to \Conid{Nothing}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
+
+
+\section{Complete and Easy Bidirectional Typechecking for Higher-Rank Polymorphism}
+I think we are now finally at a place where we can start on Dunfield and Krishnaswami's work. 
+I understand that this is quite a lot to grasp, but I believe this is as small as I can keep this without threatening 
+the goals of this paper. 
 
 \appendix 
 \section{\bf{Appendix}}
