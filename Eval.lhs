@@ -87,9 +87,6 @@ Given an expression $e$, the following rules define $FV(E)$, the set of free var
 \end{itemize}
 \subsection{Bound Variables}
 
-\subsection{$\alpha$ conversion}
-$\alpha$ conversion is. 
-
 \subsection{$\beta$ reductions}
 $\beta$ reductions simply define how we may remove a definition of a function application by moving the argument inside the function. The reduction rule is given below. 
 $$
@@ -102,9 +99,10 @@ Below are some examples to ground the reduction rule provided above.
   \item $(\lambda x . x (\lambda x . x)) y \Rightarrow y (\lambda x . x )$
 \end{itemize}
 
-\subsection{$\eta$ reductions}
+\subsection{$\eta$ conversions}
 $\eta$ reductions allow you to convert between $\lambda x . (f \ x)$ and $f$ whenever $x$ is not a free variable 
-in f.
+in f. Two $\lambda$ expressions ($\lambda x . + 1 x$ and $(+ 1)$) are equivalent in the sense that these expressions behave in exactly the same way 
+when they are applied to an argument -- they add 1 to it. In general, if $x$ does not occur in $F$, then $\lambda x . F x$ is $\eta$-convertable to $F$.
 
 \section{Set Theory}
 
