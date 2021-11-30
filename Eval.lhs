@@ -78,14 +78,33 @@ The BNF for $\lambda$ calculus is given below:
   \bnfpn{expression}
 \end{bnf*}
 
+\subsection{Free Variables}
+Given an expression $e$, the following rules define $FV(E)$, the set of free variables in $e$:
+\begin{itemize}
+  \item If $e$ is a variable $x$, then $FV(e) = x$. 
+  \item If $e$ is of the form $\lambda x.y$ then $FV(e) = FV(y) - \{x\}$.
+  \item If $e$ is of the form $xy$ then, $FV(e) = FV(x) \cup FV(y)$.
+\end{itemize}
+\subsection{Bound Variables}
+
 \subsection{$\alpha$ conversion}
 $\alpha$ conversion is. 
 
 \subsection{$\beta$ reductions}
-$\beta$ reductions are 
+$\beta$ reductions simply define how we may remove a definition of a function application by moving the argument inside the function. The reduction rule is given below. 
+$$
+(\lambda x . e_1) \Rightarrow e_1[e_2/x]
+$$
+Below are some examples to ground the reduction rule provided above. 
+\begin{itemize}
+  \item $(\lambda x . x) (\lambda y . y) \Rightarrow (\lambda y y)$
+  \item $(\lambda x . x x) (\lambda y . y y) \Rightarrow (\lambda y . y) (\lambda y . y)$
+  \item $(\lambda x . x (\lambda x . x)) y \Rightarrow y (\lambda x . x )$
+\end{itemize}
 
 \subsection{$\eta$ reductions}
-$\eta$ reductions
+$\eta$ reductions allow you to convert between $\lambda x . (f \ x)$ and $f$ whenever $x$ is not a free variable 
+in f.
 
 \section{Set Theory}
 
@@ -147,7 +166,9 @@ It is important to note two symbols that are needed to understand literature on 
 \end{itemize}
 \paragraph{Variables}
 Let's define the rule for synthesis of a type of a variable. 
-$$\frac{(x : \tau) \in \Gamma}{\Gamma \vdash x \Rightarrow \tau }$$
+$$
+\frac{(x : \tau) \in \Gamma}{\Gamma \vdash x \Rightarrow \tau }
+$$
 This is quite simple to infer the type for, since the type annotation already exists in our context. 
 \paragraph{Booleans}
 Another simple construct to type check are the boolean literals `true' and false'. The rules for inference are given below. 
@@ -166,7 +187,9 @@ inferType ctx (TFalse) = Just TBool
 \paragraph{Annotation}
 Now we examine how we can verify type annotated expression. 
 The grammar for inference/checking is shown below. 
-$$\frac{\Gamma \vdash t \Leftarrow \tau}{\Gamma \vdash : \tau \Rightarrow}$$
+$$
+\frac{\Gamma \vdash t \Leftarrow \tau}{\Gamma \vdash : \tau \Rightarrow}
+$$
 \begin{code}
 inferType ctx (TypeAnnotation t ty) = checkType ctx t ty
 \end{code}
@@ -181,7 +204,9 @@ lookupTy x ctx = M.lookup x ctx
 
 \paragraph{IfElse}
 Here we observe how `IfElse' may be checked.
-$$\frac{\Gamma \vdash t_1 \Leftarrow \textbf{Bool } \ \ \ \ \Gamma \vdash t_2 \Leftarrow \tau \ \ \ \ \Gamma \vdash t_3 \Leftarrow \tau}{\Gamma \vdash \textbf{if } t_1 \textbf{ then } t_2 \textbf{ else } t_3 \Leftarrow \tau }$$
+$$
+\frac{\Gamma \vdash t_1 \Leftarrow \textbf{Bool } \ \ \ \ \Gamma \vdash t_2 \Leftarrow \tau \ \ \ \ \Gamma \vdash t_3 \Leftarrow \tau}{\Gamma \vdash \textbf{if } t_1 \textbf{ then } t_2 \textbf{ else } t_3 \Leftarrow \tau }
+$$
 
 \begin{code}
 checkType :: M.Map String Type -> T -> Type -> Maybe Type 
@@ -194,7 +219,9 @@ checkType ctx (IfElse t1 t2 t3) ty =
 \end{code}
 
 \paragraph{Abstraction}
-$$\frac{\Gamma, x : \tau_1 \vdash \textit{t} \Leftarrow \tau_2}{\Gamma \vdash \lambda \ x . \ \textit{t} \Leftarrow \tau_1 \rightarrow \tau_2}$$
+$$
+\frac{\Gamma, x : \tau_1 \vdash \textit{t} \Leftarrow \tau_2}{\Gamma \vdash \lambda \ x . \ \textit{t} \Leftarrow \tau_1 \rightarrow \tau_2}
+$$
 \begin{code}
 checkType ctx (Abstraction x t) ty12 = 
   case ty12 of 
@@ -203,7 +230,9 @@ checkType ctx (Abstraction x t) ty12 =
 \end{code}
 
 \paragraph{Application}
-$$\frac{\Gamma \vdash \textit{t}_1 \Rightarrow \tau_1 \rightarrow \tau_2 \ \ \ \ \Gamma \vdash \textit{t}_2 \Leftarrow \tau_1}{\Gamma \vdash \textit{t}_1 \textit{t}_2 \Rightarrow \tau_2 }$$
+$$
+\frac{\Gamma \vdash \textit{t}_1 \Rightarrow \tau_1 \rightarrow \tau_2 \ \ \ \ \Gamma \vdash \textit{t}_2 \Leftarrow \tau_1}{\Gamma \vdash \textit{t}_1 \textit{t}_2 \Rightarrow \tau_2 }
+$$
 
 \paragraph{Check Inference}
 \begin{code}
