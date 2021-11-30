@@ -8,7 +8,7 @@ tex:
 pdf:tex
 	pdflatex eval.tex
 
-tinfer: 
+tinfer: Main.hs Eval.lhs
 	$(HH) -o tinfer Main.hs Eval.lhs
 
 clean:
