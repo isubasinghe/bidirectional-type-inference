@@ -296,11 +296,19 @@ Let's define a module called ``Eval'' used to contain our algorithm. This is a s
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[B]{}\{\mskip1.5mu \mathbin{\#-}\Conid{LANGUAGE}\;\Conid{DataKinds},\Conid{GADTs},\Conid{KindSignatures},\Conid{StandloneDeriving}\mathbin{-\#}\mskip1.5mu\}{}\<[E]%
+\\[\blanklineskip]%
 \>[B]{}\mathbf{module}\;\Conid{Eval}\;\mathbf{where}{}\<[E]%
 \\
 \>[B]{}\mathbf{import}\;\Varid{qualified}\;\Conid{\Conid{Data}.Set}\;\Varid{as}\;\Conid{S}{}\<[E]%
 \\
 \>[B]{}\mathbf{import}\;\Varid{qualified}\;\Conid{\Conid{Data}.Map}\;\Varid{as}\;\Conid{M}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Control}.Applicative}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Semigroup}{}\<[E]%
+\\
+\>[B]{}\mathbf{import}\;\Conid{\Conid{Data}.Monoid}{}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 
@@ -335,14 +343,31 @@ The BNF for $\lambda$ calculus is given below:
   \bnfpn{expression}
 \end{bnf*}
 
-\subsection{$\alpha$ conversion}
-$\alpha$ conversion is. 
+\subsection{Free Variables}
+Given an expression $e$, the following rules define $FV(E)$, the set of free variables in $e$:
+\begin{itemize}
+  \item If $e$ is a variable $x$, then $FV(e) = x$. 
+  \item If $e$ is of the form $\lambda x.y$ then $FV(e) = FV(y) - \{x\}$.
+  \item If $e$ is of the form $xy$ then, $FV(e) = FV(x) \cup FV(y)$.
+\end{itemize}
+\subsection{Bound Variables}
 
 \subsection{$\beta$ reductions}
-$\beta$ reductions are 
+$\beta$ reductions simply define how we may remove a definition of a function application by moving the argument inside the function. The reduction rule is given below. 
+$$
+(\lambda x . e_1) \Rightarrow e_1[e_2/x]
+$$
+Below are some examples to ground the reduction rule provided above. 
+\begin{itemize}
+  \item $(\lambda x . x) (\lambda y . y) \Rightarrow (\lambda y y)$
+  \item $(\lambda x . x x) (\lambda y . y y) \Rightarrow (\lambda y . y) (\lambda y . y)$
+  \item $(\lambda x . x (\lambda x . x)) y \Rightarrow y (\lambda x . x )$
+\end{itemize}
 
-\subsection{$\eta$ reductions}
-$\eta$ reductions
+\subsection{$\eta$ conversions}
+$\eta$ reductions allow you to convert between $\lambda x . (f \ x)$ and $f$ whenever $x$ is not a free variable 
+in f. Two $\lambda$ expressions ($\lambda x . + 1 x$ and $(+ 1)$) are equivalent in the sense that these expressions behave in exactly the same way 
+when they are applied to an argument -- they add 1 to it. In general, if $x$ does not occur in $F$, then $\lambda x . F x$ is $\eta$-convertable to $F$.
 
 \section{Set Theory}
 
@@ -431,7 +456,9 @@ It is important to note two symbols that are needed to understand literature on 
 \end{itemize}
 \paragraph{Variables}
 Let's define the rule for synthesis of a type of a variable. 
-$$\frac{(x : \tau) \in \Gamma}{\Gamma \vdash x \Rightarrow \tau }$$
+$$
+\frac{(x : \tau) \in \Gamma}{\Gamma \vdash x \Rightarrow \tau }
+$$
 This is quite simple to infer the type for, since the type annotation already exists in our context. 
 \paragraph{Booleans}
 Another simple construct to type check are the boolean literals `true' and false'. The rules for inference are given below. 
@@ -456,7 +483,9 @@ The below code is all we need for dealing with boolean literals.
 \paragraph{Annotation}
 Now we examine how we can verify type annotated expression. 
 The grammar for inference/checking is shown below. 
-$$\frac{\Gamma \vdash t \Leftarrow \tau}{\Gamma \vdash : \tau \Rightarrow}$$
+$$
+\frac{\Gamma \vdash t \Leftarrow \tau}{\Gamma \vdash : \tau \Rightarrow}
+$$
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -478,7 +507,9 @@ $$\frac{\Gamma \vdash t \Leftarrow \tau}{\Gamma \vdash : \tau \Rightarrow}$$
 
 \paragraph{IfElse}
 Here we observe how `IfElse' may be checked.
-$$\frac{\Gamma \vdash t_1 \Leftarrow \textbf{Bool } \ \ \ \ \Gamma \vdash t_2 \Leftarrow \tau \ \ \ \ \Gamma \vdash t_3 \Leftarrow \tau}{\Gamma \vdash \textbf{if } t_1 \textbf{ then } t_2 \textbf{ else } t_3 \Leftarrow \tau }$$
+$$
+\frac{\Gamma \vdash t_1 \Leftarrow \textbf{Bool } \ \ \ \ \Gamma \vdash t_2 \Leftarrow \tau \ \ \ \ \Gamma \vdash t_3 \Leftarrow \tau}{\Gamma \vdash \textbf{if } t_1 \textbf{ then } t_2 \textbf{ else } t_3 \Leftarrow \tau }
+$$
 
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -508,7 +539,9 @@ $$\frac{\Gamma \vdash t_1 \Leftarrow \textbf{Bool } \ \ \ \ \Gamma \vdash t_2 \L
 \end{hscode}\resethooks
 
 \paragraph{Abstraction}
-$$\frac{\Gamma, x : \tau_1 \vdash \textit{t} \Leftarrow \tau_2}{\Gamma \vdash \lambda \ x . \ \textit{t} \Leftarrow \tau_1 \rightarrow \tau_2}$$
+$$
+\frac{\Gamma, x : \tau_1 \vdash \textit{t} \Leftarrow \tau_2}{\Gamma \vdash \lambda \ x . \ \textit{t} \Leftarrow \tau_1 \rightarrow \tau_2}
+$$
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{3}{@{}>{\hspre}l<{\hspost}@{}}%
@@ -528,7 +561,9 @@ $$\frac{\Gamma, x : \tau_1 \vdash \textit{t} \Leftarrow \tau_2}{\Gamma \vdash \l
 \end{hscode}\resethooks
 
 \paragraph{Application}
-$$\frac{\Gamma \vdash \textit{t}_1 \Rightarrow \tau_1 \rightarrow \tau_2 \ \ \ \ \Gamma \vdash \textit{t}_2 \Leftarrow \tau_1}{\Gamma \vdash \textit{t}_1 \textit{t}_2 \Rightarrow \tau_2 }$$
+$$
+\frac{\Gamma \vdash \textit{t}_1 \Rightarrow \tau_1 \rightarrow \tau_2 \ \ \ \ \Gamma \vdash \textit{t}_2 \Leftarrow \tau_1}{\Gamma \vdash \textit{t}_1 \textit{t}_2 \Rightarrow \tau_2 }
+$$
 
 \paragraph{Check Inference}
 \begin{hscode}\SaveRestoreHook
@@ -558,6 +593,55 @@ $$\frac{\Gamma \vdash \textit{t}_1 \Rightarrow \tau_1 \rightarrow \tau_2 \ \ \ \
 I think we are now finally at a place where we can start on Dunfield and Krishnaswami's work. 
 I understand that this is quite a lot to grasp, but I believe this is as small as I can keep this without threatening 
 the goals of this paper. 
+
+\subsection{Expressions}
+Let's define the expressions in our langauge. 
+
+\begin{hscode}\SaveRestoreHook
+\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{5}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
+\>[3]{}\mathbf{data}\;\Conid{Expr}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\mathrel{=}\Conid{EVar}\;\Conid{Var}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\mid \Conid{EUnit}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\mid \Conid{EAbs}\;\Conid{Var}\;\Conid{Expr}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\mid \Conid{EApp}\;\Conid{Expr}\;\Conid{Expr}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\mid \Conid{EAnno}\;\Conid{Expr}\;\Conid{PolyType}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\mathbf{deriving}\;(\Conid{Show},\Conid{Eq}){}\<[E]%
+\\[\blanklineskip]%
+\>[3]{}\mathbf{newtype}\;\Conid{Var}\mathrel{=}\Conid{Var}\;\Conid{String}\;\mathbf{deriving}\;(\Conid{Show},\Conid{Eq},\Conid{Ord}){}\<[E]%
+\\[\blanklineskip]%
+\>[3]{}\mathbf{data}\;\Conid{TypeKind}\mathrel{=}\Conid{Mono}\mid \Conid{Poly}{}\<[E]%
+\\[\blanklineskip]%
+\>[3]{}\mathbf{data}\;\Conid{Type'}\mathbin{::}\Conid{TypeKind}\to \mathbin{*}\mathbf{where}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\Conid{TUnit}{}\<[14]%
+\>[14]{}\mathbin{::}\Conid{Type'}\;\Varid{a}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\Conid{TVar}{}\<[14]%
+\>[14]{}\mathbin{::}\Conid{TVar}\to \Conid{Type'}\;\Varid{a}{}\<[E]%
+\\
+\>[3]{}\hsindent{2}{}\<[5]%
+\>[5]{}\Conid{TExists}{}\<[14]%
+\>[14]{}\mathbin{::}\Conid{TVar}\to \Conid{Type'}\;\Varid{a}{}\<[E]%
+\ColumnHook
+\end{hscode}\resethooks
 
 \appendix 
 \section{\bf{Appendix}}

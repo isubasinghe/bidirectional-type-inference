@@ -19,3 +19,6 @@ If you just want to obtain the pdf run `make pdf`.
 If you just want to obtain the executable run `make tinfer`.
 
 A detailed, from scratch tutorial is provided here [here](./eval.pdf)
+
+## References 
+  * https://www.cl.cam.ac.uk/~nk480/bidir.pdf
