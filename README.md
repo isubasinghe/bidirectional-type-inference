@@ -2,6 +2,10 @@
 Type inference is at the core of modern programming languages. 
 One way to achieve type inference is through Hindley-Milner inference. 
 Another way is ''bidirectional type inference''. 
+# WARNING: INCOMPLETE
+
+## What? 
+A tutorial into Dunfield and Krishnaswami's work on Bidirectional Type Checking/Inference for higher rank polymorphism. 
 
 ## Why?
 Dunfield and Krishnaswami outline:
