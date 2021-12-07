@@ -9,12 +9,9 @@ A tutorial into Dunfield and Krishnaswami's work on Bidirectional Type Checking/
 
 ## Why?
 Dunfield and Krishnaswami outline:
-  * Decidable even for very expressive type systems (unlike Damas-Milner)
   * Error Reporting
   * Scalability 
   * Relative ease of implementation
-  * Sound 
-  * Complete 
 
 ## How to compile?
 Simple run `make` to generate the pdf, tex and executable files. 
