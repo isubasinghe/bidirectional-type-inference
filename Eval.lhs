@@ -42,7 +42,7 @@ a certain cognitive effort by the reader.
 Let's define a module called ``Eval'' used to contain our algorithm. This is a simple but necessary step for any Haskell program. 
 
 \begin{code}
-{#- LANGUAGE DataKinds, GADTs, KindSignatures, StandloneDeriving -#}
+{-# LANGUAGE DataKinds, GADTs, KindSignatures, StandaloneDeriving #-}
 
 module Eval where 
 import qualified Data.Set as S 
@@ -256,22 +256,7 @@ the goals of this paper.
 Let's define the expressions in our langauge. 
 
 \begin{code}
-  data Expr 
-    = EVar Var 
-    | EUnit 
-    | EAbs Var Expr 
-    | EApp Expr Expr 
-    | EAnno Expr PolyType 
-    deriving(Show, Eq)
-  
-  newtype Var = Var String deriving(Show, Eq, Ord)
 
-  data TypeKind = Mono | Poly 
-
-  data Type' :: TypeKind -> * where 
-    TUnit    :: Type' a
-    TVar     :: TVar -> Type' a 
-    TExists  :: TVar -> Type' a 
 \end{code}
 
 \appendix 

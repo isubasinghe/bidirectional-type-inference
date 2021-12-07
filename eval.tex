@@ -296,7 +296,7 @@ Let's define a module called ``Eval'' used to contain our algorithm. This is a s
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\{\mskip1.5mu \mathbin{\#-}\Conid{LANGUAGE}\;\Conid{DataKinds},\Conid{GADTs},\Conid{KindSignatures},\Conid{StandloneDeriving}\mathbin{-\#}\mskip1.5mu\}{}\<[E]%
+\>[B]{}\mbox{\enskip\{-\# LANGUAGE DataKinds, GADTs, KindSignatures, StandaloneDeriving  \#-\}\enskip}{}\<[E]%
 \\[\blanklineskip]%
 \>[B]{}\mathbf{module}\;\Conid{Eval}\;\mathbf{where}{}\<[E]%
 \\
@@ -598,48 +598,6 @@ the goals of this paper.
 Let's define the expressions in our langauge. 
 
 \begin{hscode}\SaveRestoreHook
-\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{5}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[3]{}\mathbf{data}\;\Conid{Expr}{}\<[E]%
-\\
-\>[3]{}\hsindent{2}{}\<[5]%
-\>[5]{}\mathrel{=}\Conid{EVar}\;\Conid{Var}{}\<[E]%
-\\
-\>[3]{}\hsindent{2}{}\<[5]%
-\>[5]{}\mid \Conid{EUnit}{}\<[E]%
-\\
-\>[3]{}\hsindent{2}{}\<[5]%
-\>[5]{}\mid \Conid{EAbs}\;\Conid{Var}\;\Conid{Expr}{}\<[E]%
-\\
-\>[3]{}\hsindent{2}{}\<[5]%
-\>[5]{}\mid \Conid{EApp}\;\Conid{Expr}\;\Conid{Expr}{}\<[E]%
-\\
-\>[3]{}\hsindent{2}{}\<[5]%
-\>[5]{}\mid \Conid{EAnno}\;\Conid{Expr}\;\Conid{PolyType}{}\<[E]%
-\\
-\>[3]{}\hsindent{2}{}\<[5]%
-\>[5]{}\mathbf{deriving}\;(\Conid{Show},\Conid{Eq}){}\<[E]%
-\\[\blanklineskip]%
-\>[3]{}\mathbf{newtype}\;\Conid{Var}\mathrel{=}\Conid{Var}\;\Conid{String}\;\mathbf{deriving}\;(\Conid{Show},\Conid{Eq},\Conid{Ord}){}\<[E]%
-\\[\blanklineskip]%
-\>[3]{}\mathbf{data}\;\Conid{TypeKind}\mathrel{=}\Conid{Mono}\mid \Conid{Poly}{}\<[E]%
-\\[\blanklineskip]%
-\>[3]{}\mathbf{data}\;\Conid{Type'}\mathbin{::}\Conid{TypeKind}\to \mathbin{*}\mathbf{where}{}\<[E]%
-\\
-\>[3]{}\hsindent{2}{}\<[5]%
-\>[5]{}\Conid{TUnit}{}\<[14]%
-\>[14]{}\mathbin{::}\Conid{Type'}\;\Varid{a}{}\<[E]%
-\\
-\>[3]{}\hsindent{2}{}\<[5]%
-\>[5]{}\Conid{TVar}{}\<[14]%
-\>[14]{}\mathbin{::}\Conid{TVar}\to \Conid{Type'}\;\Varid{a}{}\<[E]%
-\\
-\>[3]{}\hsindent{2}{}\<[5]%
-\>[5]{}\Conid{TExists}{}\<[14]%
-\>[14]{}\mathbin{::}\Conid{TVar}\to \Conid{Type'}\;\Varid{a}{}\<[E]%
 \ColumnHook
 \end{hscode}\resethooks
 
