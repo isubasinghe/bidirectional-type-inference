@@ -238,6 +238,9 @@ $$
 $$
 
 \paragraph{Check Inference}
+$$
+\frac{\Gamma \vdash \textit{t} \Rightarrow \tau}{\Gamma \vdash \textit{t} \Leftarrow \tau}
+$$
 \begin{code}
 checkType ctx t ty = case inferType ctx t of
                        Just ty' -> if ty' == ty then 
